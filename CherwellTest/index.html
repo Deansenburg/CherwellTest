@@ -1,0 +1,80 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Triangle App</title>
+</head>
+<body>
+    <div>
+        <h2>Triangle</h2>
+        <ul id="points" />
+    </div>
+    <div>
+        <h2>Search by Row/Column</h2>
+        <input type="text" id="row" maxlength="1" value="a" />
+        <input type="number" id="column" maxlength="2" value="1" />
+        <input type="button" value="Search" onclick="find();" />
+    </div>
+    <div>
+        <h2>Search by Points</h2>
+        <input type="number" id="p00" value="0" />
+        <input type="number" id="p01" value="0" />
+        <input type="number" id="p10" value="10" />
+        <input type="number" id="p11" value="10" />
+        <input type="number" id="p20" value="0" />
+        <input type="number" id="p21" value="10" />
+
+        <input type="button" value="Search" onclick="reverse();" />
+    </div>
+
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
+    <script>
+
+        function formatItem(item) {
+            return "<li>" +
+                item.Row + item.Column + "</li><li>" +
+                " p0:" + item.Points[0] + "</li><li>" +
+                " p1:" + item.Points[1] + "</li><li>" +
+                " p2:" + item.Points[2] + "</li>"
+        }
+
+        function reverse() {
+            var points = "p0=" + $('#p00').val() + "&" +
+                "p0=" + $('#p01').val() + "&" +
+                "p1=" + $('#p10').val() + "&" +
+                "p1=" + $('#p11').val() + "&" +
+                "p2=" + $('#p20').val() + "&" +
+                "p2=" + $('#p21').val();
+            $.getJSON('api/reverse?' + points)
+                .done(function (data) {
+                    $('#points').empty();
+
+                    var list = document.getElementById('points');
+                    $(formatItem(data)).appendTo(list);
+                })
+                .fail(error);
+        }
+
+        function find() {
+            var row = $('#row').val();
+            var column = $('#column').val();
+            $.getJSON('api/lookup/' + row + '/' + column)
+                .done(function (data) {
+                    $('#points').empty();
+
+                    var list = document.getElementById('points');
+                    $(formatItem(data)).appendTo(list);
+                })
+                .fail(error);
+        }
+
+        function error(jqXHR, textStatus, err) {
+            $('#points').empty();
+
+            var list = document.getElementById('points');
+            $("<li>" + err + "</li>").appendTo(list);
+            $("<li>" + jqXHR.responseJSON.Message + "</li>").appendTo(list);
+        }
+
+    </script>
+</body>
+</html>
