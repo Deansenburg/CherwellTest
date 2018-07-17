@@ -26,8 +26,40 @@
         <input type="button" value="Search" onclick="reverse();" />
     </div>
 
+    <canvas width="60" height="60" id="canvas" />
+
     <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
     <script>
+
+        $(document).ready(function () {
+            img = new Image;
+            img.src = "api/image"
+        });
+
+        function drawImage(points) {
+            var canvas = document.getElementById('canvas');
+            var ctx = canvas.getContext('2d');
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.save();
+            ctx.beginPath();
+            var point = points[0];
+            ctx.moveTo(point[0], point[1]);
+            for (var i = 0; i < points.length; i++) {
+                var point = points[i];
+                ctx.lineTo(point[0], point[1]);
+            }
+            ctx.closePath();
+            ctx.clip();
+
+            ctx.drawImage(img, 0, 0);
+
+            ctx.restore();
+
+            ctx.rect(0, 0, canvas.width, canvas.height);
+            ctx.stroke();
+        }
 
         function formatItem(item) {
             return "<li>" +
@@ -50,6 +82,8 @@
 
                     var list = document.getElementById('points');
                     $(formatItem(data)).appendTo(list);
+
+                    drawImage(data.Points);
                 })
                 .fail(error);
         }
@@ -63,6 +97,8 @@
 
                     var list = document.getElementById('points');
                     $(formatItem(data)).appendTo(list);
+
+                    drawImage(data.Points);
                 })
                 .fail(error);
         }
